@@ -14,7 +14,7 @@ func NewFileInfo(disk int, start int, length int) FileInfo {
 	return FileInfo {
 		DiskNumber: disk,
 		StartingSector: start,
-		FileLength: length
+		FileLength: length,
 	}
 }
 

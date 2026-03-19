@@ -21,3 +21,8 @@ func NewResourceManager(count int) *ResourceManager {
 func (rm *ResourceManager) Count() int {
 	return len(rm.isFree)
 }
+
+// is a specific resource available
+func (rm *ResourceManager) IsFree(index int) bool {
+	return rm.isFree[index]
+}

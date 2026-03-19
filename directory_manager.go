@@ -11,3 +11,8 @@ func NewDirectoryManager() *DirectoryManager {
 		files: make(map[string]FileInfo),
 	}
 }
+
+// enter inserts or updates file metadata
+func (dm *DirectoryManager) Enter(name string, info FileInfo) {
+	dm.files[name] = info
+}

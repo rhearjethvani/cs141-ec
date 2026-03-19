@@ -16,3 +16,8 @@ func NewResourceManager(count int) *ResourceManager {
 		isFree: isFree,
 	}
 }
+
+// return number of resources
+func (rm *ResourceManager) Count() int {
+	return len(rm.isFree)
+}

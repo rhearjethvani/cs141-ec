@@ -104,19 +104,8 @@ func main() {
 			fileNameToPrint := strings.TrimSpace(line[len(".print"):])
 			fmt.Println("PRINT command for file:", fileNameToPrint)
 
-			info, valid := directory.Lookup(fileNameToPrint)
-			if !valid {
-				fmt.Println("File not found in directory:", fileNameToPrint)
-				continue
-			}
-
-			for i := 0; i < info.FileLength; i++ {
-				sector := info.StartingSector + i
-				data := disks[info.DiskNumber].Read(sector)
-				printers[0].PrintLine(data)
-
-				fmt.Println("Printed line from disk sector", sector, ":", data)
-			}
+			job := NewPrintJob(fileNameToPrint)
+			job.Run(directory, disks, printers[0])
 		} else if saving {
 			targetSector := startSector + fileLength
 			disks[diskNum].Write(targetSector, line)

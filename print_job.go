@@ -11,3 +11,20 @@ func NewPrintJob(fileName string) *PrintJob {
 		FileName: fileName,
 	}
 }
+
+// executes the print job using the provided directory, disks, and priinter
+func (pj *PrintJob) Run(directory *DirectoryManager, disks []*Disk, printer *Printer) {
+	info, valid := directory.Lookup(pj.FileName)
+	if !valid {
+		fmt.Println("File not found in directory:", pj.FileName)
+		return
+	}
+
+	for i := 0; i < info.FileLength; i++ {
+		sector := info.StartingSector + i
+		data := disks[info.DiskNumber].Read(sector)
+		printer.PrintLine(data)
+
+		fmt.Println("Printed line from disk sector", sector, ":", data)
+	}
+}

@@ -11,3 +11,7 @@ func NewPrinterManager(numPrinters int) *PrinterManager {
 		resourceManager: NewResourceManager(numPrinters),
 	}
 }
+
+func (pm *PrinterManager) Count() int {
+	return pm.resourceManager.Count()
+}

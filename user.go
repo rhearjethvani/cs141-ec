@@ -90,7 +90,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			fileLength++
 
 			fmt.Println("Wrote data line to disk sector", targetSector, ":", line)
-		} else {
+		} else if line != "" {
 			fmt.Println("Ignoring unexpected line:", line)
 		}
 	}

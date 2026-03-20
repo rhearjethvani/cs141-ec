@@ -1,0 +1,10 @@
+.save temp_A
+temp_A 00000
+temp_A 11111
+.end
+
+.print temp_A
+
+.delete temp_A
+
+.print temp_A

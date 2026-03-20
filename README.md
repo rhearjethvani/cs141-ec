@@ -13,14 +13,11 @@ In addition to the base implementation, the system includes three extensions tha
 go run . <numUsers> <numDisks> <numPrinters>
 
 ### Test Scripts
-
-Run these to demonstrate extensions:
 ./test.sh              # baseline correctness
 ./test_priority.sh     # extension 1: print scheduling
 ./test_deletion.sh     # extension 2: deletion + reclamation
 ./test_load_balance.sh # extension 3: disk load balancing
-
----
+```
 
 ## Extensions
 

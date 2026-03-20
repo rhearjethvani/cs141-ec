@@ -31,3 +31,16 @@ func (dm *DirectoryManager) Lookup(name string) (FileInfo, bool) {
 	info, valid := dm.files[name]
 	return info, valid
 }
+
+// removes file metadata from directory; returns true if the file existed and false otherwise
+func (dm *DirectoryManager) Delete(name string) bool {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+
+	if _, valid := dm.files[name]; !valid {
+		return false
+	}
+
+	delete(dm.files, name)
+	return true
+}

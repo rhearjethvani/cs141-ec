@@ -105,9 +105,20 @@ func (u *User) Run(
 			}
 
 			job := NewPrintJob(fileNameToPrint, info)
-			
+
 			printWG.Add(1)
 			printQueue.Enqueue(job)
+		
+		} else if strings.HasPrefix(line, ".delete") {
+			fileNameToDelete := strings.TrimSpace(line[len(".delete"):])
+			fmt.Println("DELETE command for file:", fileNameToDelete)
+
+			deleted := directory.Delete(fileNameToDelete)
+			if deleted {
+				fmt.Println("Deleted file metadata for:", fileNameToDelete)
+			} else {
+				fmt.Println("File not found for deletion:", fileNameToDelete)
+			}
 
 		} else if saving {
 			targetSector := startSector + fileLength

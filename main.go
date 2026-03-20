@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"bufio"
+	"strings"
 )
 
 func main() {
@@ -41,8 +42,32 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 
+	saving := false
+	currentFileName := ""
+
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+		line := strings.TrimSpace(scanner.Text())
+
+		if strings.HasPrefix(line, ".save") {
+			saving = true
+			currentFileName = strings.TrimSpace(line[len(".save"):])
+			fmt.Println("SAVE command for file:", currentFileName)
+		} else if line == ".end" {
+			fmt.Println("END command for fle:", currentFileName)
+			saving = false
+			currentFileName = ""
+		} else if strings.HasPrefix(line, ".print") {
+			fileNameToPrint := strings.TrimSpace(line[len(".print"):])
+			fmt.Println("PRINT command for file:", fileNameToPrint)
+		} else if saving {
+			fmt.Println("DATA line:", line)
+		} else {
+			fmt.Println("Ignoring unexpected liine:", line)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading file:", err)
 	}
 
 	file.Close()

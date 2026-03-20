@@ -2,6 +2,8 @@
 
 package main
 
+import "time"
+
 const NumSectors = 2048
 const DiskDelayMs = 800
 
@@ -15,4 +17,10 @@ func NewDisk(id int) *Disk {
 		ID: id,
 		Sectors: make([]string, NumSectors),
 	}
+}
+
+// writes data to a specific sector with delay
+func (d *Disk) Write(sector int, data string) {
+	time.Sleep(time.Millisecond * DiskDelayMs)
+	d.Sectors[sector] = data
 }

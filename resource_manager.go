@@ -2,19 +2,27 @@
 
 package main
 
+import (
+	"sync"
+)
+
 type ResourceManager struct {
 	isFree []bool
+	mu sync.Mutex
+	cond *sync.Cond
 }
 
 func NewResourceManager(count int) *ResourceManager {
-	isFree := make([]bool, count)
-	for i := range isFree {
-		isFree[i] = true
+	rm := &ResourceManager {
+		isFree: make([]bool, count),
 	}
 
-	return &ResourceManager {
-		isFree: isFree,
+	for i := 0; i < count; i++ {
+		rm.isFree[i] = true
 	}
+
+	rm.cond = sync.NewCond(&rm.mu)
+	return rm
 }
 
 // return number of resources
@@ -29,18 +37,26 @@ func (rm *ResourceManager) IsFree(index int) bool {
 
 // returns an available resource index; for user0 return first free one
 func (rm *ResourceManager) Request() int {
-	for i := 0; i < len(rm.isFree); i++ {
-		if rm.isFree[i] {
-			rm.isFree[i] = false
-			return i
-		}
-	}
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
 
-	// if none available
-	return -1
+	for {
+		for i := 0; i < len(rm.isFree); i++ {
+			if rm.isFree[i] {
+				rm.isFree[i] = false
+				return i
+			}
+		}
+
+		rm.cond.Wait()
+	}
 }
 
 // frees a resource index
 func (rm *ResourceManager) Release(index int) {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
 	rm.isFree[index] = true
+	rm.cond.Broadcast()
 }

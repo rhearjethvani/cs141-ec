@@ -3,17 +3,26 @@
 package main
 
 import (
+	"strings"
 	"fmt"
 )
 
 type PrintJob struct {
 	FileName string
-	Info FileInfo
+	Info     FileInfo
+	Priority int
 }
 
-func NewPrintJob(fileName string) *PrintJob {
-	return &PrintJob {
+func NewPrintJob(fileName string, info FileInfo) PrintJob {
+	priority := 0
+	if strings.HasPrefix(fileName, "urgent_") {
+		priority = 1
+	}
+
+	return PrintJob{
 		FileName: fileName,
+		Info:     info,
+		Priority: priority,
 	}
 }
 

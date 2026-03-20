@@ -16,9 +16,25 @@ func NewPrintQueue() *PrintQueue {
 
 func (pq *PrintQueue) Enqueue(job PrintJob) {
 	pq.mu.Lock()
-	pq.queue = append(pq.queue, job)
+	defer pq.mu.Unlock()
+
+	if job.Priority == 1 {
+		inserted := false
+		for i, existing := range pq.queue {
+			if existing.Priority == 0 {
+				pq.queue = append(pq.queue[:i], append([]PrintJob{job}, pq.queue[i:]...)...)
+				inserted = true
+				break
+			}
+		}
+		if !inserted {
+			pq.queue = append(pq.queue, job)
+		}
+	} else {
+		pq.queue = append(pq.queue, job)
+	}
+
 	pq.cond.Signal()
-	pq.mu.Unlock()
 }
 
 func (pq *PrintQueue) Dequeue() PrintJob {

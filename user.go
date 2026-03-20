@@ -104,11 +104,8 @@ func (u *User) Run(
 				continue
 			}
 
-			job := PrintJob{
-				FileName: fileNameToPrint,
-				Info: info,
-			}
-
+			job := NewPrintJob(fileNameToPrint, info)
+			
 			printWG.Add(1)
 			printQueue.Enqueue(job)
 

@@ -2,6 +2,10 @@
 
 package main
 
+import (
+	"fmt"
+)
+
 type PrintJob struct {
 	FileName string
 }

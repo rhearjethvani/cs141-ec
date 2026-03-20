@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"bufio"
 )
 
 func main() {
@@ -25,4 +26,24 @@ func main() {
 	fmt.Println("Users:", numUsers)
 	fmt.Println("Disks:", numDisks)
 	fmt.Println("Printers:", numPrinters)
+
+	// smoke test: read USER0
+	user := NewUser(0)
+	path := user.InputPath()
+
+	fmt.Println("Reading from:", path)
+
+	file, err := os.Open(path)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+
+	file.Close()
 }

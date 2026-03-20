@@ -52,5 +52,5 @@ func main() {
 
 	// smoke test: read USER0
 	user := NewUser(0)
-	user.Run(disks, printers, directory, diskManager)
+	user.Run(disks, printers, directory, diskManager, printerManager)
 }

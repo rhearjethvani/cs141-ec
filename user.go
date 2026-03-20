@@ -89,7 +89,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			go func() {
 				defer printWG.Done()
 				job.Run(directory, disks, printers, printerManager)
-			}
+			} ()
 		} else if saving {
 			targetSector := startSector + fileLength
 			disks[diskNum].Write(targetSector, line)

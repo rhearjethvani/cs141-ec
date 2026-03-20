@@ -51,11 +51,23 @@ func main() {
 	printerManager := NewPrinterManager(numPrinters)
 	fmt.Println("PrinterManager ready:", printerManager != nil)
 
+	users := make([]*User, numUsers)
+	for i :=  0; i < numUsers; i++ {
+		users[i] = NewUser(i)
+	}
+
+	var userWG sync.WaitGroup
 	var printWG sync.WaitGroup
 
-	// smoke test: read USER0
-	user := NewUser(0)
-	user.Run(disks, printers, directory, diskManager, printerManager, &printWG)
+	for _, user := range users {
+		userWG.Add(1)
+		
+		go func(u *User) {
+			defer userWG.Done()
+			u.Run(disks, printers, directory, diskManager, printerManager, &printWG)
+		} (user)
+	}
 
+	userWG.Wait()
 	printWG.Wait()
 }

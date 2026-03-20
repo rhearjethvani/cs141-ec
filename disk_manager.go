@@ -2,7 +2,10 @@
 
 package main
 
-import "sync"
+import (
+	"sync"
+	"fmt"
+)
 
 type FreeSegment struct {
 	Start int
@@ -47,6 +50,56 @@ func (dm *DiskManager) Request() int {
 
 func (dm *DiskManager) Release(index int) {
 	dm.resourceManager.Release(index)
+}
+
+// picks the best available disk for a new file of the given length
+// prefers a disk with a reusable free segment; falls back to least-used disk
+func (dm *DiskManager) ChooseDisk(length int) int {
+	dm.resourceManager.mu.Lock()
+	defer dm.resourceManager.mu.Unlock()
+
+	for {
+		// first pass: prefer a disk with a reusable segment that fits
+		for i, free := range dm.resourceManager.isFree {
+			if !free {
+				continue
+			}
+			dm.mu.Lock()
+			for _, seg := range dm.freeSegments[i] {
+				if seg.Length >= length {
+					dm.mu.Unlock()
+					dm.resourceManager.isFree[i] = false
+					fmt.Println("Chose disk", i, "(has reusable space)")
+					return i
+				}
+			}
+			dm.mu.Unlock()
+		}
+
+		// second pass: pick the free disk with the least data written
+		best := -1
+		bestSectors := int(^uint(0) >> 1)
+		for i, free := range dm.resourceManager.isFree {
+			if !free {
+				continue
+			}
+			dm.mu.Lock()
+			used := dm.nextFreeSector[i]
+			dm.mu.Unlock()
+			if used < bestSectors {
+				bestSectors = used
+				best = i
+			}
+		}
+
+		if best != -1 {
+			dm.resourceManager.isFree[best] = false
+			fmt.Println("Chose disk", best, "(least used, sectors:", bestSectors, ")")
+			return best
+		}
+
+		dm.resourceManager.cond.Wait()
+	}
 }
 
 // tries to reuse a freed segment on this disk; if none fits, it appends at nextFreeSector

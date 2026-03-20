@@ -1,0 +1,25 @@
+.save file_A
+file_A 00000
+file_A 11111
+.end
+
+.save file_B
+file_B 00000
+file_B 11111
+.end
+
+.save file_C
+file_C 00000
+file_C 11111
+.end
+
+.delete file_A
+
+.save file_D
+file_D 00000
+file_D 11111
+.end
+
+.print file_B
+.print file_C
+.print file_D

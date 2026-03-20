@@ -71,7 +71,7 @@ func (u *User) Run(
 			saving = true
 			currentFileName = strings.TrimSpace(line[len(".save"):])
 
-			diskNum = diskManager.Request()
+			diskNum = diskManager.ChooseDisk(1)
 			fileLines = make([]string, 0)
 
 			fmt.Println("SAVE command for file:", currentFileName)

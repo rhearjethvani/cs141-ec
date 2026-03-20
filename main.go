@@ -53,7 +53,7 @@ func main() {
 			currentFileName = strings.TrimSpace(line[len(".save"):])
 			fmt.Println("SAVE command for file:", currentFileName)
 		} else if line == ".end" {
-			fmt.Println("END command for fle:", currentFileName)
+			fmt.Println("END command for file:", currentFileName)
 			saving = false
 			currentFileName = ""
 		} else if strings.HasPrefix(line, ".print") {
@@ -62,7 +62,7 @@ func main() {
 		} else if saving {
 			fmt.Println("DATA line:", line)
 		} else {
-			fmt.Println("Ignoring unexpected liine:", line)
+			fmt.Println("Ignoring unexpected line:", line)
 		}
 	}
 

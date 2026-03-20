@@ -24,3 +24,9 @@ func (d *Disk) Write(sector int, data string) {
 	time.Sleep(time.Millisecond * DiskDelayMs)
 	d.Sectors[sector] = data
 }
+
+// copies data from a specific sector into a string result with delay
+func (d *Disk) Read(sector int) string {
+	time.Sleep(time.Millisecond * DiskDelayMs)
+	return d.Sectors[sector]
+}

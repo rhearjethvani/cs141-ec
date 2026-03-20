@@ -3,11 +3,11 @@
 package main
 
 import (
-	"strconv"
-	"path/filepath"
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -17,7 +17,7 @@ type User struct {
 }
 
 func NewUser(id int) *User {
-	return &User {
+	return &User{
 		ID: id,
 	}
 }
@@ -32,8 +32,19 @@ func (u *User) InputPath() string {
 	return filepath.Join("users", u.InputFile())
 }
 
-// processes user's command file in single-user mode
-func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManager, diskManager *DiskManager, printerManager *PrinterManager, printWG *sync.WaitGroup) {
+// processes user's command file
+func (u *User) Run(
+	disks []*Disk,
+	printers []*Printer,
+	directory *DirectoryManager,
+	diskManager *DiskManager,
+	printerManager *PrinterManager,
+	printWG *sync.WaitGroup,
+	printQueue *PrintQueue,
+) {
+	_ = printers
+	_ = printerManager
+
 	path := u.InputPath()
 	fmt.Println("Reading from:", path)
 
@@ -42,12 +53,13 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 		fmt.Println("Error opening file:", err)
 		return
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 
 	saving := false
 	currentFileName := ""
-	
+
 	diskNum := 0
 	startSector := 0
 	fileLength := 0
@@ -64,6 +76,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 
 			fmt.Println("SAVE command for file:", currentFileName)
 			fmt.Println("Starting save on disk", diskNum, "at sector", startSector)
+
 		} else if line == ".end" {
 			fmt.Println("END command for file:", currentFileName)
 
@@ -80,23 +93,32 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			currentFileName = ""
 			fileLength = 0
 			startSector = 0
+
 		} else if strings.HasPrefix(line, ".print") {
 			fileNameToPrint := strings.TrimSpace(line[len(".print"):])
 			fmt.Println("PRINT command for file:", fileNameToPrint)
 
-			job := NewPrintJob(fileNameToPrint)
-			printWG.Add(1)
+			info, valid := directory.Lookup(fileNameToPrint)
+			if !valid {
+				fmt.Println("File not found in directory:", fileNameToPrint)
+				continue
+			}
 
-			go func() {
-				defer printWG.Done()
-				job.Run(directory, disks, printers, printerManager)
-			} ()
+			job := PrintJob{
+				FileName: fileNameToPrint,
+				Info: info,
+			}
+
+			printWG.Add(1)
+			printQueue.Enqueue(job)
+
 		} else if saving {
 			targetSector := startSector + fileLength
 			disks[diskNum].Write(targetSector, line)
 			fileLength++
 
 			fmt.Println("Wrote data line to disk sector", targetSector, ":", line)
+
 		} else if line != "" {
 			fmt.Println("Ignoring unexpected line:", line)
 		}
@@ -105,6 +127,4 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading file:", err)
 	}
-
-	file.Close()
 }

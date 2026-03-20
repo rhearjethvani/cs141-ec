@@ -8,6 +8,7 @@ import (
 
 type PrintJob struct {
 	FileName string
+	Info FileInfo
 }
 
 func NewPrintJob(fileName string) *PrintJob {

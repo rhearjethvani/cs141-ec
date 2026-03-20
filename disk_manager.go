@@ -18,3 +18,8 @@ func NewDiskManager(numDisks int) *DiskManager {
 func (dm *DiskManager) GetNextFreeSector(disk int) int {
 	return dm.nextFreeSector[disk]
 }
+
+// update the next available sector index for a disk
+func (dm *DiskManager) SetNextFreeSector(disk int, nextSector int) {
+	dm.nextFreeSector[disk] = nextSector
+}

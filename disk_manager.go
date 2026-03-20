@@ -2,9 +2,12 @@
 
 package main
 
+import "sync"
+
 type DiskManager struct {
 	resourceManager *ResourceManager
 	nextFreeSector []int
+	mu sync.Mutex
 }
 
 func NewDiskManager(numDisks int) *DiskManager {
@@ -16,11 +19,17 @@ func NewDiskManager(numDisks int) *DiskManager {
 
 // returns the next available sector index for a disk
 func (dm *DiskManager) GetNextFreeSector(disk int) int {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+
 	return dm.nextFreeSector[disk]
 }
 
 // update the next available sector index for a disk
 func (dm *DiskManager) SetNextFreeSector(disk int, nextSector int) {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	
 	dm.nextFreeSector[disk] = nextSector
 }
 

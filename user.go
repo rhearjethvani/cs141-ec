@@ -70,6 +70,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			if saving {
 				info := NewFileInfo(diskNum, startSector, fileLength)
 				directory.Enter(currentFileName, info)
+				diskManager.SetNextFreeSector(diskNum, startSector+fileLength)
 				diskManager.Release(diskNum)
 
 				fmt.Println("Saved file metadata:", info)

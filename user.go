@@ -57,7 +57,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 		if strings.HasPrefix(line, ".save") {
 			saving = true
 			currentFileName = strings.TrimSpace(line[len(".save"):])
-			diskNum = 0
+			diskNum = diskManager.Request()
 			startSector = diskManager.GetNextFreeSector(diskNum)
 			fileLength = 0
 
@@ -69,7 +69,7 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			if saving {
 				info := NewFileInfo(diskNum, startSector, fileLength)
 				directory.Enter(currentFileName, info)
-				diskManager.SetNextFreeSector(diskNum, startSector+fileLength)
+				diskManager.Release(diskNum)
 
 				fmt.Println("Saved file metadata:", info)
 			}
@@ -83,7 +83,9 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			fmt.Println("PRINT command for file:", fileNameToPrint)
 
 			job := NewPrintJob(fileNameToPrint)
-			job.Run(directory, disks, printers[0])
+
+			printerNum := 0 // temporary
+			job.Run(directory, disks, printers[printerNum])
 		} else if saving {
 			targetSector := startSector + fileLength
 			disks[diskNum].Write(targetSector, line)

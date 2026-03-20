@@ -15,3 +15,12 @@ func NewPrinterManager(numPrinters int) *PrinterManager {
 func (pm *PrinterManager) Count() int {
 	return pm.resourceManager.Count()
 }
+
+// pass through methods
+func (pm *PrinterManager) Request() int {
+	return pm.resourceManager.Request()
+}
+
+func (pm *PrinterManager) Release(index int) {
+	pm.resourceManager.Release(index)
+}

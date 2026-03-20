@@ -23,3 +23,12 @@ func (dm *DiskManager) GetNextFreeSector(disk int) int {
 func (dm *DiskManager) SetNextFreeSector(disk int, nextSector int) {
 	dm.nextFreeSector[disk] = nextSector
 }
+
+// pass through methods
+func (dm *DiskManager) Request() int {
+	return dm.resourceManager.Request()
+}
+
+func (dm *DiskManager) Release(index int) {
+	dm.resourceManager.Release(index)
+}

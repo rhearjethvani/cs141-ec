@@ -5,7 +5,7 @@ package main
 import "time"
 
 const NumSectors = 2048
-const DiskDelayMs = 800
+const DiskDelayMs = 2 // 800
 
 type Disk struct {
 	ID int

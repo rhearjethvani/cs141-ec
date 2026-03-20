@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-const PrintDelayMs = 2750
+const PrintDelayMs = 2 // 2750
 
 type Printer struct {
 	ID int

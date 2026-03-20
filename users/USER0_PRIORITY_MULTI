@@ -1,0 +1,24 @@
+.save normal_A
+normal_A 00000
+normal_A 11111
+.end
+
+.save urgent_B
+urgent_B 00000
+urgent_B 11111
+.end
+
+.save normal_C
+normal_C 00000
+normal_C 11111
+.end
+
+.save urgent_D
+urgent_D 00000
+urgent_D 11111
+.end
+
+.print normal_A
+.print normal_C
+.print urgent_B
+.print urgent_D

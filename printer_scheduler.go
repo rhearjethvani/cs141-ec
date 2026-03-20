@@ -1,6 +1,9 @@
 package main
 
-import "sync"
+import (
+	"sync"
+	"fmt"
+)
 
 func StartPrinterScheduler(
 	printQueue *PrintQueue,
@@ -12,6 +15,8 @@ func StartPrinterScheduler(
 	go func() {
 		for {
 			job := printQueue.Dequeue()
+
+			fmt.Println("Scheduling print job:", job.FileName, "priority:", job.Priority)
 
 			printerNum := printerManager.Request()
 			printer := printers[printerNum]

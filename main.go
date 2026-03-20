@@ -28,6 +28,30 @@ func main() {
 	fmt.Println("Disks:", numDisks)
 	fmt.Println("Printers:", numPrinters)
 
+	// initialize runtime components for single-user testing
+	fmt.Println("Initialized runtime:")
+
+	disks := make([]*Disk, numDisks)
+	for i := 0; i < numDisks; i++ {
+		disks[i] = NewDisk(i)
+	}
+	fmt.Println("Disks created:", len(disks))
+
+	printers := make([]*Printer, numPrinters)
+	for i := 0; i < numPrinters; i++ {
+		printers[i] = NewPrinter(i)
+	}
+	fmt.Println("Printers created:", len(printers))
+
+	directory := NewDirectoryManager()
+	fmt.Println("Directory ready:", directory != nil)
+
+	diskManager := NewDiskManager(numDisks)
+	fmt.Println("DiskManager ready:", diskManager != nil)
+
+	printerManager := NewPrinterManager(numPrinters)
+	fmt.Println("PrinterManager ready:", printerManager != nil)
+
 	// smoke test: read USER0
 	user := NewUser(0)
 	path := user.InputPath()

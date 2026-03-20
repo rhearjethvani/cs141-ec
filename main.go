@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 )
 
 func main() {
@@ -50,7 +51,11 @@ func main() {
 	printerManager := NewPrinterManager(numPrinters)
 	fmt.Println("PrinterManager ready:", printerManager != nil)
 
+	var printWG sync.WaitGroup
+
 	// smoke test: read USER0
 	user := NewUser(0)
-	user.Run(disks, printers, directory, diskManager, printerManager)
+	user.Run(disks, printers, directory, diskManager, printerManager, &printWG)
+
+	printWG.Wait()
 }

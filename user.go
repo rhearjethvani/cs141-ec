@@ -9,6 +9,7 @@ import (
 	"os"
 	"bufio"
 	"strings"
+	"sync"
 )
 
 type User struct {
@@ -32,7 +33,7 @@ func (u *User) InputPath() string {
 }
 
 // processes user's command file in single-user mode
-func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManager, diskManager *DiskManager, printerManager *PrinterManager) {
+func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManager, diskManager *DiskManager, printerManager *PrinterManager, printWG *sync.WaitGroup) {
 	path := u.InputPath()
 	fmt.Println("Reading from:", path)
 
@@ -83,7 +84,12 @@ func (u *User) Run(disks []*Disk, printers []*Printer, directory *DirectoryManag
 			fmt.Println("PRINT command for file:", fileNameToPrint)
 
 			job := NewPrintJob(fileNameToPrint)
-			job.Run(directory, disks, printers, printerManager)
+			printWG.Add(1)
+
+			go func() {
+				defer printWG.Done()
+				job.Run(directory, disks, printers, printerManager)
+			}
 		} else if saving {
 			targetSector := startSector + fileLength
 			disks[diskNum].Write(targetSector, line)
